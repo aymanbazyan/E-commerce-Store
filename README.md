@@ -5,3 +5,5 @@ It has an admin panel to manage and control content, products, categories, etc..
 Thanks to my teacher and the project author [JavaScript Mastery](https://www.youtube.com/@javascriptmastery)
 
 I made a few changes to improve the project, like specifing the currency of the store (with its icon) in the .env file, adding warnings to the seeding button, removing unnecessary buttons, etc...
+
+![image](https://github.com/user-attachments/assets/ba9eaf1a-372c-499f-941d-a6635fc2985c)
