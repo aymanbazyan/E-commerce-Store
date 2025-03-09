@@ -12,6 +12,8 @@ export const ProductHero: React.FC<{
   product: Product
 }> = ({ product }) => {
   const { title, categories, meta: { image: metaImage, description } = {} } = product
+  const price = Math.floor(JSON.parse(product.priceJSON).data[0].unit_amount / 100)
+  const isInStock = price !== 0
 
   return (
     <Gutter className={classes.productHero}>
@@ -41,17 +43,23 @@ export const ProductHero: React.FC<{
               )
             })}
           </div>
-          <p className={classes.stock}> In stock</p>
+          <p className={isInStock ? classes.stock : classes.noStock}>
+            {isInStock ? 'In' : 'Out of'} stock
+          </p>
         </div>
 
-        <Price product={product} button={false} />
+        {isInStock && <Price product={product} button={false} />}
 
         <div className={classes.description}>
           <h6>Description</h6>
           <p>{description}</p>
         </div>
 
-        <AddToCartButton product={product} className={classes.addToCartButton} />
+        <AddToCartButton
+          disabled={!isInStock}
+          product={product}
+          className={classes.addToCartButton}
+        />
       </div>
     </Gutter>
   )

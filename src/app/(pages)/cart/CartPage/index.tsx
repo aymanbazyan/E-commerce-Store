@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Fragment } from 'react'
+import React, { Fragment, useState } from 'react'
 import Link from 'next/link'
 
 import { Page, Settings } from '../../../../payload/payload-types'
@@ -8,7 +8,7 @@ import { Button } from '../../../_components/Button'
 import { HR } from '../../../_components/HR'
 import { LoadingShimmer } from '../../../_components/LoadingShimmer'
 import { Media } from '../../../_components/Media'
-import { Price } from '../../../_components/Price'
+import { Price, priceFromJSON } from '../../../_components/Price'
 import { RemoveFromCartButton } from '../../../_components/RemoveFromCartButton'
 import { useAuth } from '../../../_providers/Auth'
 import { useCart } from '../../../_providers/Cart'
@@ -26,6 +26,7 @@ export const CartPage: React.FC<{
   const { user } = useAuth()
 
   const { cart, cartIsEmpty, addItemToCart, cartTotal, hasInitializedCart } = useCart()
+  const [disabled, setDisabled] = useState(false)
 
   return (
     <Fragment>
@@ -80,6 +81,11 @@ export const CartPage: React.FC<{
                       const isLast = index === (cart?.items?.length || 0) - 1
 
                       const metaImage = meta?.image
+                      const price = priceFromJSON(product.priceJSON, quantity)
+                      const isOutOfStock = price.startsWith(
+                        `${process.env.NEXT_PUBLIC_CURRENCY_SYMBOL}0.`,
+                      )
+                      if (isOutOfStock) setDisabled(true)
 
                       return (
                         <CartItem
@@ -103,7 +109,7 @@ export const CartPage: React.FC<{
 
                 <div className={classes.row}>
                   <p className={classes.cartTotal}>Delivery Charge</p>
-                  <p className={classes.cartTotal}>₪ 0</p>
+                  <p className={classes.cartTotal}>{process.env.NEXT_PUBLIC_CURRENCY_SYMBOL} 0</p>
                 </div>
 
                 <div className={classes.row}>
@@ -112,9 +118,10 @@ export const CartPage: React.FC<{
                 </div>
 
                 <Button
+                  disabled={disabled}
                   className={classes.checkoutButton}
                   href={user ? '/checkout' : '/login?redirect=%2Fcheckout'}
-                  label={user ? 'Checkout' : 'Login to checkout'}
+                  label={disabled ? 'Out of stock' : user ? 'Checkout' : 'Login to checkout'}
                   appearance="primary"
                 />
               </div>
